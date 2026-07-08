@@ -131,7 +131,7 @@ type BookingRow = {
   end_date: string;
   total_cents: number;
   status: string;
-  cars: { name: string; brand: string; hero_image: string; slug: string };
+  cars: { name: string; brand: string; hero_image: string | null; slug: string };
 };
 
 function TripCard({ b, muted = false }: { b: BookingRow; muted?: boolean }) {
