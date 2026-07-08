@@ -98,7 +98,7 @@ function CarDetail() {
               {car.brand} · {car.category}
             </p>
             <h1 className="mt-6 font-display text-[15vw] leading-[0.82] tracking-tighter text-bone md:text-[7vw]">
-              {car.name.split(" ").map((w, i) => (
+              {car.name.split(" ").map((w: string, i: number) => (
                 <span key={i}>
                   {i === 0 ? w : <span className="font-serif-italic text-copper"> {w}</span>}
                 </span>

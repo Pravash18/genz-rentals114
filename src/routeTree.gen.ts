@@ -9,38 +9,104 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LocationsRouteImport } from './routes/locations'
+import { Route as FleetRouteImport } from './routes/fleet'
+import { Route as ExperienceRouteImport } from './routes/experience'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FleetSlugRouteImport } from './routes/fleet.$slug'
 
+const LocationsRoute = LocationsRouteImport.update({
+  id: '/locations',
+  path: '/locations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FleetRoute = FleetRouteImport.update({
+  id: '/fleet',
+  path: '/fleet',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExperienceRoute = ExperienceRouteImport.update({
+  id: '/experience',
+  path: '/experience',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FleetSlugRoute = FleetSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => FleetRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/experience': typeof ExperienceRoute
+  '/fleet': typeof FleetRouteWithChildren
+  '/locations': typeof LocationsRoute
+  '/fleet/$slug': typeof FleetSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/experience': typeof ExperienceRoute
+  '/fleet': typeof FleetRouteWithChildren
+  '/locations': typeof LocationsRoute
+  '/fleet/$slug': typeof FleetSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/experience': typeof ExperienceRoute
+  '/fleet': typeof FleetRouteWithChildren
+  '/locations': typeof LocationsRoute
+  '/fleet/$slug': typeof FleetSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/experience' | '/fleet' | '/locations' | '/fleet/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/experience' | '/fleet' | '/locations' | '/fleet/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/experience'
+    | '/fleet'
+    | '/locations'
+    | '/fleet/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ExperienceRoute: typeof ExperienceRoute
+  FleetRoute: typeof FleetRouteWithChildren
+  LocationsRoute: typeof LocationsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/locations': {
+      id: '/locations'
+      path: '/locations'
+      fullPath: '/locations'
+      preLoaderRoute: typeof LocationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fleet': {
+      id: '/fleet'
+      path: '/fleet'
+      fullPath: '/fleet'
+      preLoaderRoute: typeof FleetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/experience': {
+      id: '/experience'
+      path: '/experience'
+      fullPath: '/experience'
+      preLoaderRoute: typeof ExperienceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +114,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fleet/$slug': {
+      id: '/fleet/$slug'
+      path: '/$slug'
+      fullPath: '/fleet/$slug'
+      preLoaderRoute: typeof FleetSlugRouteImport
+      parentRoute: typeof FleetRoute
+    }
   }
 }
 
+interface FleetRouteChildren {
+  FleetSlugRoute: typeof FleetSlugRoute
+}
+
+const FleetRouteChildren: FleetRouteChildren = {
+  FleetSlugRoute: FleetSlugRoute,
+}
+
+const FleetRouteWithChildren = FleetRoute._addFileChildren(FleetRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ExperienceRoute: ExperienceRoute,
+  FleetRoute: FleetRouteWithChildren,
+  LocationsRoute: LocationsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
