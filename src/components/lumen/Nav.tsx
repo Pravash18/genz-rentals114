@@ -13,12 +13,12 @@ export function Nav() {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 mix-blend-difference">
-      <div className="flex items-center justify-between px-8 py-6 md:px-14 md:py-8">
-        <Link to="/" className="font-display text-xl tracking-tighter text-bone">
-          LUMEN<span className="text-copper">.</span>
+    <header className="fixed top-4 left-4 right-4 z-50">
+      <div className="glass-strong flex items-center justify-between px-6 py-4 md:px-8">
+        <Link to="/" className="font-mono text-sm uppercase tracking-[0.2em] text-bone">
+          LUMEN<span className="text-copper">/</span>
         </Link>
-        <nav className="hidden items-center gap-10 font-mono text-[11px] uppercase tracking-[0.25em] text-bone md:flex">
+        <nav className="hidden items-center gap-8 font-mono text-[11px] uppercase tracking-[0.25em] text-bone md:flex">
           <Link to="/fleet" className="link-underline">Fleet</Link>
           <Link to="/experience" className="link-underline">Experience</Link>
           <Link to="/locations" className="link-underline">Locations</Link>
@@ -30,10 +30,10 @@ export function Nav() {
         </nav>
         <Link
           to={email ? "/fleet" : "/auth"}
-          className="hidden md:inline-flex items-center gap-2 rounded-full border border-bone/30 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.3em] text-bone transition hover:border-copper hover:text-copper"
+          className="hidden md:inline-flex items-center gap-2 border border-copper bg-copper px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.3em] text-obsidian transition hover:bg-copper-glow"
         >
           Reserve
-          <span className="text-copper">→</span>
+          <span>→</span>
         </Link>
       </div>
     </header>
