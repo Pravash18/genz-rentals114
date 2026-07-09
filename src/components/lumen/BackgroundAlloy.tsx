@@ -1,98 +1,45 @@
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import * as THREE from "three";
+import { useEffect, useRef, useState } from "react";
+import alloyImg from "@/assets/alloy-wheel.png";
 
 /**
- * Procedural alloy wheel — no external model.
- * Continuously spins on Z, with scroll velocity nudging the speed
- * so the ambient motion tracks how the user is browsing.
+ * Ambient background alloy — a real photographed wheel, spun continuously
+ * on the page. Scroll velocity nudges the rotation so it feels alive
+ * without ever competing with the content.
  */
-function AlloyWheel({ scrollBoost }: { scrollBoost: React.MutableRefObject<number> }) {
-  const group = useRef<THREE.Group>(null);
-
-  // Build spokes once
-  const spokes = useMemo(() => {
-    const arr: { rot: number }[] = [];
-    const count = 7;
-    for (let i = 0; i < count; i++) arr.push({ rot: (i / count) * Math.PI * 2 });
-    return arr;
-  }, []);
-
-  useFrame((_, delta) => {
-    if (!group.current) return;
-    // Base slow spin + scroll boost that decays each frame
-    const spin = 0.18 + scrollBoost.current;
-    group.current.rotation.z += spin * delta;
-    scrollBoost.current *= 0.94; // ease back to baseline
-  });
-
-  const metal = { color: "#d8ceba", metalness: 1, roughness: 0.28 } as const;
-  const darkMetal = { color: "#2a2622", metalness: 0.9, roughness: 0.45 } as const;
-  const tire = { color: "#1a1815", metalness: 0.2, roughness: 0.85 } as const;
-
-  return (
-    <group ref={group} rotation={[Math.PI / 2, 0, 0]}>
-      {/* Tire — thick torus */}
-      <mesh castShadow>
-        <torusGeometry args={[2.2, 0.55, 24, 96]} />
-        <meshStandardMaterial {...tire} />
-      </mesh>
-      {/* Outer rim lip */}
-      <mesh>
-        <torusGeometry args={[2.05, 0.14, 20, 96]} />
-        <meshStandardMaterial {...metal} />
-      </mesh>
-      {/* Inner rim ring */}
-      <mesh>
-        <torusGeometry args={[1.75, 0.08, 16, 96]} />
-        <meshStandardMaterial {...darkMetal} />
-      </mesh>
-      {/* Hub */}
-      <mesh>
-        <cylinderGeometry args={[0.42, 0.42, 0.35, 32]} />
-        <meshStandardMaterial {...metal} />
-      </mesh>
-      {/* Center cap */}
-      <mesh position={[0, 0.18, 0]}>
-        <cylinderGeometry args={[0.18, 0.18, 0.06, 24]} />
-        <meshStandardMaterial color="#8a7a5c" metalness={1} roughness={0.15} />
-      </mesh>
-      {/* Spokes — tapered boxes radiating out */}
-      {spokes.map((s, i) => (
-        <group key={i} rotation={[0, s.rot, 0]}>
-          <mesh position={[0, 0, 1.1]}>
-            <boxGeometry args={[0.28, 0.18, 1.7]} />
-            <meshStandardMaterial {...metal} />
-          </mesh>
-          {/* Spoke shadow gap */}
-          <mesh position={[0, -0.02, 1.1]}>
-            <boxGeometry args={[0.14, 0.19, 1.72]} />
-            <meshStandardMaterial {...darkMetal} />
-          </mesh>
-        </group>
-      ))}
-    </group>
-  );
-}
-
 export function BackgroundAlloy() {
   const [mounted, setMounted] = useState(false);
-  const scrollBoost = useRef(0);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const angle = useRef(0);
+  const velocity = useRef(0.08); // deg per frame baseline
+  const boost = useRef(0);
   const lastY = useRef(0);
+  const raf = useRef<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
     lastY.current = window.scrollY;
+
     const onScroll = () => {
       const y = window.scrollY;
       const dy = y - lastY.current;
       lastY.current = y;
-      // Cap the boost so a fast scroll doesn't fling the wheel
-      scrollBoost.current = Math.max(-2.5, Math.min(2.5, scrollBoost.current + dy * 0.012));
+      boost.current = Math.max(-3, Math.min(3, boost.current + dy * 0.02));
     };
+
+    const tick = () => {
+      angle.current = (angle.current + velocity.current + boost.current) % 360;
+      boost.current *= 0.92; // decay to baseline
+      if (imgRef.current) {
+        imgRef.current.style.transform = `translate3d(0,0,0) rotate(${angle.current}deg)`;
+      }
+      raf.current = requestAnimationFrame(tick);
+    };
+    raf.current = requestAnimationFrame(tick);
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf.current) cancelAnimationFrame(raf.current);
+    };
   }, []);
 
   if (!mounted) return null;
@@ -100,28 +47,25 @@ export function BackgroundAlloy() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-[60]"
-      style={{
-        mixBlendMode: "multiply",
-        opacity: 0.16,
-      }}
+      className="pointer-events-none fixed inset-0 z-[60] overflow-hidden"
+      style={{ mixBlendMode: "multiply", opacity: 0.14 }}
     >
-      <Canvas
-        camera={{ position: [0, 0, 8], fov: 32 }}
-        dpr={[1, 1.75]}
-        gl={{ alpha: true, antialias: true, powerPreference: "low-power" }}
-        style={{ background: "transparent" }}
-      >
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[4, 6, 5]} intensity={0.7} />
-        <Suspense fallback={null}>
-          {/* Position wheel to bottom-right so content breathes over it */}
-          <group position={[3.4, -1.4, 0]} scale={1.35}>
-            <AlloyWheel scrollBoost={scrollBoost} />
-          </group>
-          <Environment preset="studio" />
-        </Suspense>
-      </Canvas>
+      {/* Positioned so ~60% of the wheel bleeds off the bottom-right corner */}
+      <img
+        ref={imgRef}
+        src={alloyImg}
+        alt=""
+        width={1024}
+        height={1024}
+        className="absolute select-none will-change-transform"
+        style={{
+          right: "-18vw",
+          bottom: "-22vw",
+          width: "min(90vh, 78vw)",
+          height: "min(90vh, 78vw)",
+          filter: "contrast(1.05) saturate(0.9)",
+        }}
+      />
     </div>
   );
 }
