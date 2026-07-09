@@ -41,9 +41,9 @@ function FleetPage() {
         <p className="font-mono text-[11px] uppercase tracking-[0.35em] text-copper">
           The fleet · {cars.length} vehicles
         </p>
-        <h1 className="mt-6 font-display text-[18vw] leading-[0.82] tracking-tighter md:text-[10vw]">
+          <h1 className="mt-6 font-display text-[16vw] leading-[0.86] tracking-tighter md:text-[9vw]">
           Choose your<br />
-          <span className="font-serif-italic text-copper">weapon.</span>
+          <span className="font-serif-italic text-copper">companion.</span>
         </h1>
       </section>
 
