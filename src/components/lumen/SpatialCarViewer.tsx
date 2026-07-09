@@ -33,7 +33,6 @@ function Scene() {
           rotation={[0, -Math.PI / 6, 0]}
           polar={[-Math.PI / 8, Math.PI / 6]}
           azimuth={[-Infinity, Infinity]}
-          config={{ mass: 2, tension: 350, friction: 40 }}
         >
           <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.25}>
             <CarModel />
