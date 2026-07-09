@@ -7,8 +7,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Nav } from "@/components/lumen/Nav";
 import { Footer } from "@/components/lumen/Footer";
 import { RouteCurtain } from "@/components/lumen/RouteCurtain";
-import { TiltImage } from "@/components/lumen/TiltImage";
-import { carImageFor } from "@/lib/car-assets";
+import { SpatialCarViewer } from "@/components/lumen/SpatialCarViewer";
 import { formatUsd, daysBetween } from "@/lib/format";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -85,7 +84,6 @@ function CarDetail() {
 
       {/* ─── SPATIAL HERO ─── */}
       <section className="relative min-h-screen overflow-hidden pt-32">
-        <div className="absolute inset-0 radial-copper noise" />
         <div className="relative z-10 mx-auto grid max-w-[1800px] grid-cols-12 gap-6 px-8 pb-24 md:px-14">
           <div className="col-span-12 md:col-span-4">
             <Link to="/fleet" className="link-underline font-mono text-[10px] uppercase tracking-[0.3em] text-copper">
@@ -111,13 +109,7 @@ function CarDetail() {
             )}
           </div>
           <div className="col-span-12 md:col-span-8">
-            <TiltImage
-              src={carImageFor(car.hero_image)}
-              alt={car.name}
-              eager
-              className="aspect-[4/3] w-full overflow-hidden border border-border/60"
-              intensity={7}
-            />
+            <SpatialCarViewer className="h-[70vh] w-full" />
           </div>
         </div>
       </section>
