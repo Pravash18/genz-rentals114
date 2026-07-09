@@ -44,16 +44,15 @@ function AuthPage() {
   };
 
   useEffect(() => {
-    const saved = sessionStorage.getItem("lumen:next");
-    if (!saved) return;
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) {
+        const saved = sessionStorage.getItem("lumen:next");
         sessionStorage.removeItem("lumen:next");
-        navigate({ to: saved });
+        navigate({ to: saved || next || "/dashboard" });
       }
     });
     return () => sub.subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, next]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
