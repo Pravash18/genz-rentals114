@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { SmoothScroll } from "@/components/lumen/SmoothScroll";
+import { BackgroundAlloy } from "@/components/lumen/BackgroundAlloy";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -133,7 +134,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <SmoothScroll />
-      <div className="grain" aria-hidden />
+      <BackgroundAlloy />
       <Outlet />
       <Toaster theme="dark" />
     </QueryClientProvider>
