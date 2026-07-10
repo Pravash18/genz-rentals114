@@ -22,6 +22,9 @@ export function Nav() {
           <Link to="/fleet" className="link-underline">Fleet</Link>
           <Link to="/experience" className="link-underline">Experience</Link>
           <Link to="/locations" className="link-underline">Locations</Link>
+          {email === "stoicpravash@gmail.com" && (
+            <Link to="/admin" className="link-underline text-copper">Admin</Link>
+          )}
           {email ? (
             <Link to="/dashboard" className="link-underline">Account</Link>
           ) : (

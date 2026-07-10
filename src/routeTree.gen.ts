@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as FleetSlugRouteImport } from './routes/fleet.$slug'
 import { Route as CheckoutBookingIdRouteImport } from './routes/checkout.$bookingId'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedBookingsIdRouteImport } from './routes/_authenticated/bookings.$id'
 
 const LocationsRoute = LocationsRouteImport.update({
@@ -64,6 +65,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedBookingsIdRoute = AuthenticatedBookingsIdRouteImport.update({
   id: '/bookings/$id',
   path: '/bookings/$id',
@@ -76,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/experience': typeof ExperienceRoute
   '/fleet': typeof FleetRouteWithChildren
   '/locations': typeof LocationsRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/checkout/$bookingId': typeof CheckoutBookingIdRoute
   '/fleet/$slug': typeof FleetSlugRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/experience': typeof ExperienceRoute
   '/fleet': typeof FleetRouteWithChildren
   '/locations': typeof LocationsRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/checkout/$bookingId': typeof CheckoutBookingIdRoute
   '/fleet/$slug': typeof FleetSlugRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/experience': typeof ExperienceRoute
   '/fleet': typeof FleetRouteWithChildren
   '/locations': typeof LocationsRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/checkout/$bookingId': typeof CheckoutBookingIdRoute
   '/fleet/$slug': typeof FleetSlugRoute
@@ -113,6 +122,7 @@ export interface FileRouteTypes {
     | '/experience'
     | '/fleet'
     | '/locations'
+    | '/admin'
     | '/dashboard'
     | '/checkout/$bookingId'
     | '/fleet/$slug'
@@ -124,6 +134,7 @@ export interface FileRouteTypes {
     | '/experience'
     | '/fleet'
     | '/locations'
+    | '/admin'
     | '/dashboard'
     | '/checkout/$bookingId'
     | '/fleet/$slug'
@@ -136,6 +147,7 @@ export interface FileRouteTypes {
     | '/experience'
     | '/fleet'
     | '/locations'
+    | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/checkout/$bookingId'
     | '/fleet/$slug'
@@ -217,6 +229,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/bookings/$id': {
       id: '/_authenticated/bookings/$id'
       path: '/bookings/$id'
@@ -228,11 +247,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedBookingsIdRoute: typeof AuthenticatedBookingsIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedBookingsIdRoute: AuthenticatedBookingsIdRoute,
 }
