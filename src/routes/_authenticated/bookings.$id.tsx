@@ -242,9 +242,9 @@ function ConciergeDialog({
   );
 }
 
-type Route = { name: string; distance: string; duration: string; highlight: string; note: string };
+type ScenicRoute = { name: string; distance: string; duration: string; highlight: string; note: string };
 
-const ROUTE_LIBRARY: Record<string, Route[]> = {
+const ROUTE_LIBRARY: Record<string, ScenicRoute[]> = {
   Monaco: [
     { name: "Grande Corniche → Èze", distance: "32 km", duration: "1h 20m", highlight: "Cliffside hairpins with the Med below", note: "Break at Château Èze for espresso at sunrise." },
     { name: "Col de Turini loop", distance: "108 km", duration: "3h", highlight: "The legendary Monte Carlo rally stage", note: "Alpine air, low traffic before 10am." },
