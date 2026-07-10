@@ -10,9 +10,9 @@ const locOpts = queryOptions({ queryKey: ["locations"], queryFn: () => listLocat
 export const Route = createFileRoute("/locations")({
   head: () => ({
     meta: [
-      { title: "Locations — Lumen" },
+      { title: "Locations — 114 Rentals(A+)" },
       { name: "description", content: "Five cities. Handover on your terms." },
-      { property: "og:title", content: "Locations — Lumen" },
+      { property: "og:title", content: "Locations — 114 Rentals(A+)" },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(locOpts),

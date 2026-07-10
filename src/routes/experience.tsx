@@ -8,9 +8,9 @@ import { heroAtmosphereImg } from "@/lib/car-assets";
 export const Route = createFileRoute("/experience")({
   head: () => ({
     meta: [
-      { title: "The Experience — Lumen" },
-      { name: "description", content: "The Lumen way — a private automotive ritual." },
-      { property: "og:title", content: "The Experience — Lumen" },
+      { title: "The Experience — 114 Rentals(A+)" },
+      { name: "description", content: "The 114 Rentals(A+) way — a private automotive ritual." },
+      { property: "og:title", content: "The Experience — 114 Rentals(A+)" },
     ],
   }),
   component: ExperiencePage,

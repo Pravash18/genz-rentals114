@@ -30,7 +30,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-24 flex flex-col items-start justify-between gap-4 border-t border-border/60 pt-6 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground md:flex-row md:items-center">
-          <p>© {new Date().getFullYear()} Lumen Automotive Reserve</p>
+          <p>© {new Date().getFullYear()} 114 Rentals(A+) Automotive Reserve</p>
           <p>Monaco · Los Angeles · Dubai · Tokyo · Milan</p>
         </div>
       </div>

@@ -12,8 +12,8 @@ const searchSchema = z.object({ next: z.string().optional() });
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — Lumen" },
-      { name: "description", content: "Access your Lumen reserve." },
+      { title: "Sign in — 114 Rentals(A+)" },
+      { name: "description", content: "Access your 114 Rentals(A+) reserve." },
     ],
   }),
   validateSearch: searchSchema,
@@ -68,7 +68,7 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        toast.success("Welcome to Lumen", { description: "Check your email if verification is required." });
+        toast.success("Welcome to 114 Rentals(A+)", { description: "Check your email if verification is required." });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
