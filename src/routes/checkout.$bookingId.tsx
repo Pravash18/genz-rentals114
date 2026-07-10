@@ -15,8 +15,8 @@ const bookingOpts = (id: string) =>
 export const Route = createFileRoute("/checkout/$bookingId")({
   head: () => ({
     meta: [
-      { title: "Checkout — Lumen" },
-      { name: "description", content: "Complete your Lumen reservation." },
+      { title: "Checkout — 114 Rentals(A+)" },
+      { name: "description", content: "Complete your 114 Rentals(A+) reservation." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -122,7 +122,7 @@ function CheckoutPage() {
             <div className="mb-8 aspect-[16/10] w-full rounded-xl border border-copper/40 bg-gradient-to-br from-obsidian via-card to-obsidian p-6 shadow-xl">
               <div className="flex h-full flex-col justify-between">
                 <div className="flex items-start justify-between">
-                  <p className="font-serif-italic text-2xl text-copper">Lumen</p>
+                  <p className="font-serif-italic text-2xl text-copper">114 Rentals(A+)</p>
                   <div className="h-8 w-12 rounded bg-champagne/30" />
                 </div>
                 <div>

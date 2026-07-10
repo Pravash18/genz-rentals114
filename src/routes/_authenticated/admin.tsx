@@ -27,7 +27,7 @@ const adminOpts = queryOptions({
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
-      { title: "Admin — Lumen" },
+      { title: "Admin — 114 Rentals(A+)" },
       { name: "robots", content: "noindex" },
     ],
   }),

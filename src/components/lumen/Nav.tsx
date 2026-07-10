@@ -16,7 +16,7 @@ export function Nav() {
     <header className="fixed top-4 left-4 right-4 z-50">
       <div className="glass-strong flex items-center justify-between px-6 py-4 md:px-8">
         <Link to="/" className="font-mono text-sm uppercase tracking-[0.2em] text-bone">
-          LUMEN<span className="text-copper">/</span>
+          114 RENTALS(A+)<span className="text-copper">/</span>
         </Link>
         <nav className="hidden items-center gap-8 font-mono text-[11px] uppercase tracking-[0.25em] text-bone md:flex">
           <Link to="/fleet" className="link-underline">Fleet</Link>

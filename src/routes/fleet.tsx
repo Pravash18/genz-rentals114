@@ -17,10 +17,10 @@ const carsOpts = queryOptions({ queryKey: ["cars"], queryFn: () => listCars() })
 export const Route = createFileRoute("/fleet")({
   head: () => ({
     meta: [
-      { title: "The Fleet — Lumen" },
-      { name: "description", content: "The complete Lumen reserve — exotic, grand tourer, luxury EV, SUV, and classic vehicles." },
-      { property: "og:title", content: "The Fleet — Lumen" },
-      { property: "og:description", content: "The complete Lumen reserve." },
+      { title: "The Fleet — 114 Rentals(A+)" },
+      { name: "description", content: "The complete 114 Rentals(A+) reserve — exotic, grand tourer, luxury EV, SUV, and classic vehicles." },
+      { property: "og:title", content: "The Fleet — 114 Rentals(A+)" },
+      { property: "og:description", content: "The complete 114 Rentals(A+) reserve." },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(carsOpts),

@@ -23,12 +23,12 @@ export const Route = createFileRoute("/fleet/$slug")({
   },
   head: ({ loaderData }) => {
     const car = loaderData?.car;
-    if (!car) return { meta: [{ title: "Not found — Lumen" }] };
+    if (!car) return { meta: [{ title: "Not found — 114 Rentals(A+)" }] };
     return {
       meta: [
-        { title: `${car.brand} ${car.name} — Lumen` },
-        { name: "description", content: car.tagline ?? car.description ?? "Book with Lumen." },
-        { property: "og:title", content: `${car.brand} ${car.name} — Lumen` },
+        { title: `${car.brand} ${car.name} — 114 Rentals(A+)` },
+        { name: "description", content: car.tagline ?? car.description ?? "Book with 114 Rentals(A+)." },
+        { property: "og:title", content: `${car.brand} ${car.name} — 114 Rentals(A+)` },
         { property: "og:description", content: car.tagline ?? "" },
       ],
     };
