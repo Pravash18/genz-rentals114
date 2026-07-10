@@ -286,7 +286,11 @@ function RouteGuideDialog({
   const routes = (city && ROUTE_LIBRARY[city]) || [
     { name: "The Open Road", distance: "—", duration: "—", highlight: "Curated route pending for this handover city", note: "Message your concierge for a bespoke itinerary." },
   ];
+  const [activeMap, setActiveMap] = useState<string | null>(null);
+  const [sendTarget, setSendTarget] = useState<ScenicRoute | null>(null);
+  const mapsKey = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY as string | undefined;
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl border border-border bg-obsidian text-bone">
         <DialogHeader>
@@ -302,7 +306,13 @@ function RouteGuideDialog({
         </DialogHeader>
 
         <div className="mt-2 max-h-[60vh] space-y-4 overflow-y-auto pr-1">
-          {routes.map((r) => (
+          {routes.map((r) => {
+            const query = encodeURIComponent(r.name + (city ? " " + city : ""));
+            const isOpen = activeMap === r.name;
+            const embedSrc = mapsKey
+              ? `https://www.google.com/maps/embed/v1/place?key=${mapsKey}&q=${query}&zoom=10`
+              : `https://www.google.com/maps?q=${query}&output=embed`;
+            return (
             <div key={r.name} className="border border-border/60 p-5 transition hover:border-copper">
               <div className="flex items-baseline justify-between gap-4">
                 <h3 className="font-display text-2xl tracking-tight text-bone">{r.name}</h3>
@@ -314,25 +324,220 @@ function RouteGuideDialog({
               <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
                 Concierge note · {r.note}
               </p>
-              <div className="mt-4 flex gap-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 <button
-                  onClick={() => toast.success(`${r.name} sent to your car's nav`)}
+                  onClick={() => setSendTarget(r)}
                   className="rounded-full bg-copper px-4 py-2 font-mono text-[10px] uppercase tracking-[0.3em] text-obsidian hover:opacity-90"
                 >
                   Send to car
                 </button>
+                <button
+                  onClick={() => setActiveMap(isOpen ? null : r.name)}
+                  className="rounded-full border border-border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.3em] text-bone hover:border-copper"
+                >
+                  {isOpen ? "Hide map" : "Preview on map"}
+                </button>
                 <a
-                  href={`https://www.google.com/maps/search/${encodeURIComponent(r.name + (city ? " " + city : ""))}`}
+                  href={`https://www.google.com/maps/search/?api=1&query=${query}`}
                   target="_blank"
                   rel="noreferrer"
                   className="rounded-full border border-border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.3em] text-bone hover:border-copper"
                 >
-                  Preview on map
+                  Open in Maps ↗
                 </a>
               </div>
+              {isOpen && (
+                <div className="mt-4 aspect-[16/9] w-full overflow-hidden border border-border/60">
+                  <iframe
+                    title={`Map preview — ${r.name}`}
+                    src={embedSrc}
+                    className="h-full w-full"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                  />
+                </div>
+              )}
             </div>
+          );
+          })}
+        </div>
+      </DialogContent>
+    </Dialog>
+    <SendToCarDialog
+      route={sendTarget}
+      city={city}
+      car={car}
+      onClose={() => setSendTarget(null)}
+    />
+    </>
+  );
+}
+
+function SendToCarDialog({
+  route,
+  city,
+  car,
+  onClose,
+}: {
+  route: ScenicRoute | null;
+  city?: string;
+  car: string;
+  onClose: () => void;
+}) {
+  const [method, setMethod] = useState<"qr" | "email" | "phone">("qr");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [sending, setSending] = useState(false);
+  const open = route !== null;
+  const query = route ? encodeURIComponent(route.name + (city ? " " + city : "")) : "";
+  const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${query}&travelmode=driving`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=8&data=${encodeURIComponent(navUrl)}`;
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(navUrl);
+      toast.success("Navigation link copied");
+    } catch {
+      toast.error("Copy failed — long-press the link instead");
+    }
+  }
+
+  async function handleSend() {
+    if (!route) return;
+    if (method === "email" && !/^\S+@\S+\.\S+$/.test(email)) {
+      toast.error("Enter a valid email");
+      return;
+    }
+    if (method === "phone" && phone.replace(/\D/g, "").length < 7) {
+      toast.error("Enter a valid phone number");
+      return;
+    }
+    setSending(true);
+    // Simulated car-nav dispatch (matches the mock payment pattern used elsewhere)
+    await new Promise((r) => setTimeout(r, 900));
+    setSending(false);
+    if (method === "email") {
+      toast.success(`${route.name} sent to ${email}`, {
+        description: "Open the link on the car's paired device to load it into nav.",
+      });
+    } else if (method === "phone") {
+      toast.success(`${route.name} SMS'd to ${phone}`, {
+        description: "Tap the link on your phone — CarPlay / Android Auto will hand it to the car.",
+      });
+    } else {
+      toast.success(`${route.name} ready to scan`, {
+        description: "Scan the QR from the car's infotainment camera or your phone.",
+      });
+    }
+    onClose();
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-lg border border-border bg-obsidian text-bone">
+        <DialogHeader>
+          <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-copper">Send to car nav</p>
+          <DialogTitle className="font-display text-3xl leading-none tracking-tighter text-bone">
+            {route?.name}
+          </DialogTitle>
+          <DialogDescription className="text-bone/60">
+            Deliver this route to the {car}. Choose how you'd like the handoff.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex gap-2 pt-2">
+          {(["qr", "email", "phone"] as const).map((m) => (
+            <button
+              key={m}
+              onClick={() => setMethod(m)}
+              className={`rounded-full border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.3em] transition ${
+                method === m
+                  ? "border-copper bg-copper text-obsidian"
+                  : "border-border text-bone hover:border-copper"
+              }`}
+            >
+              {m === "qr" ? "QR code" : m === "email" ? "Email" : "Phone"}
+            </button>
           ))}
         </div>
+
+        {method === "qr" && (
+          <div className="mt-4 flex flex-col items-center gap-4">
+            <div className="border border-border bg-bone p-3">
+              <img src={qrUrl} alt="QR code with navigation link" width={240} height={240} />
+            </div>
+            <p className="text-center font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+              Scan from the infotainment camera or your phone camera
+            </p>
+          </div>
+        )}
+
+        {method === "email" && (
+          <div className="mt-4 space-y-2">
+            <label className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              Deliver to email
+            </label>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="driver@example.com"
+              className="border-border bg-obsidian text-bone"
+            />
+          </div>
+        )}
+
+        {method === "phone" && (
+          <div className="mt-4 space-y-2">
+            <label className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              SMS to phone
+            </label>
+            <Input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+1 555 000 0000"
+              className="border-border bg-obsidian text-bone"
+            />
+          </div>
+        )}
+
+        <div className="mt-4 space-y-2">
+          <label className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+            Navigation link
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              readOnly
+              value={navUrl}
+              onFocus={(e) => e.currentTarget.select()}
+              className="flex-1 truncate rounded-md border border-border bg-obsidian px-3 py-2 font-mono text-[11px] text-bone/80"
+            />
+            <button
+              onClick={copyLink}
+              className="rounded-full border border-border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.3em] text-bone hover:border-copper"
+            >
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <DialogFooter className="gap-2">
+          <button
+            onClick={onClose}
+            className="rounded-full border border-border px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.3em] text-bone hover:border-copper"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSend}
+            disabled={sending}
+            className="rounded-full bg-copper px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.3em] text-obsidian hover:opacity-90 disabled:opacity-60"
+          >
+            {sending ? "Sending…" : method === "qr" ? "Confirm & mark sent" : "Send now"}
+          </button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
